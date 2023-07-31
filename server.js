@@ -15,6 +15,9 @@ connectDB();
 
 const app = express();
 
+//body parser
+app.use(express.json());
+
 //load morgan loggers
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
