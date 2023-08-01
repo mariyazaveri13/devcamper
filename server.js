@@ -5,11 +5,11 @@ const connectDB = require('./config/db');
 const colors = require('colors');
 const errorHandler = require('./middleware/error');
 
-//load bootcamps
-const bootcamps = require('./routes/bootcamps');
-
 //Load env variables
 dotenv.config({ path: './config/config.env' });
+
+//load bootcamps
+const bootcamps = require('./routes/bootcamps');
 
 //connect to database
 connectDB();
