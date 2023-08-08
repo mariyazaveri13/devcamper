@@ -33,7 +33,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   );
 
   //Finding resource
-  query = Bootcamp.find(JSON.parse(queryStr));
+  query = Bootcamp.find(JSON.parse(queryStr)).populate('courses');
 
   //select fields to return
   if (req.query.select) {
@@ -82,14 +82,12 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     return res.status(400).json({ success: false });
   }
 
-  res
-    .status(200)
-    .json({
-      success: true,
-      count: bootcamps.length,
-      pagination,
-      data: bootcamps,
-    });
+  res.status(200).json({
+    success: true,
+    count: bootcamps.length,
+    pagination,
+    data: bootcamps,
+  });
 });
 
 //@desc - Get single Bootcamps
@@ -116,12 +114,14 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 //@route - /api/v1/bootcamps/:id
 //@access - Private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+  const bootcamp = await Bootcamp.findOne({ _id: req.params.id });
+  console.log(bootcamp);
   if (!bootcamp) {
     return next(
       new ErrorResponse(`Resourse not found for id ${req.params.id}`, 400)
     );
   }
+  await bootcamp.deleteOne();
   res.status(200).json({ success: true, data: {} });
 });
 
