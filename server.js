@@ -1,9 +1,11 @@
+const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const colors = require('colors');
 const errorHandler = require('./middleware/error');
+const fileupload = require('express-fileupload');
 
 //Load env variables
 dotenv.config({ path: './config/config.env' });
@@ -24,6 +26,13 @@ app.use(express.json());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+//File uploading
+app.use(fileupload());
+
+//Set static folder so we can go to the url in browser and actually see the image
+//access img from browser http://localhost:5000/uploads/<photoname>
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Mount bootcamps
 app.use('/api/v1/bootcamps', bootcamps);
