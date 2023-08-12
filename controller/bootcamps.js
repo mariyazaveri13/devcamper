@@ -8,8 +8,6 @@ const path = require('path');
 //@route - /api/v1/bootcamps
 //@access - Public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-  console.log(req.query);
-
   res.status(200).json(res.advancedResults);
 });
 
@@ -29,6 +27,22 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 //@route - /api/v1/bootcamps
 //@access - Private
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
+  //Add a user to req.body
+  req.body.user = req.user.id;
+
+  // Check for published bootcamps
+  const publishedBootcamps = await Bootcamp.findOne({ user: req.user.id });
+
+  // If the user is not an admin he can only add one bootcamp
+  if (publishedBootcamps && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `The user with ID ${req.user.id} has already listed a bootcamp`,
+        400
+      )
+    );
+  }
+
   const bootcamp = await Bootcamp.create(req.body);
   res.status(201).json({ success: true, data: bootcamp });
 });
