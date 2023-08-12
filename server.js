@@ -10,9 +10,10 @@ const fileupload = require('express-fileupload');
 //Load env variables
 dotenv.config({ path: './config/config.env' });
 
-//load bootcamps
+//load routes
 const bootcamps = require('./routes/bootcamps');
 const courses = require('./routes/courses');
+const auth = require('./routes/auth');
 
 //connect to database
 connectDB();
@@ -34,9 +35,10 @@ app.use(fileupload());
 //access img from browser http://localhost:5000/uploads/<photoname>
 app.use(express.static(path.join(__dirname, 'public')));
 
-//Mount bootcamps
+//Mount routes
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
+app.use('/api/v1/auth', auth);
 
 //custom error handler
 app.use(errorHandler);
