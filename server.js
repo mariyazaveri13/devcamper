@@ -7,6 +7,11 @@ const colors = require('colors');
 const errorHandler = require('./middleware/error');
 const fileupload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
+const mongoSanatize = require('express-mongo-sanitize');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
 
 //Load env variables
 dotenv.config({ path: './config/config.env' });
@@ -36,6 +41,22 @@ if (process.env.NODE_ENV === 'development') {
 
 //File uploading
 app.use(fileupload());
+
+//Sanitize Data
+app.use(mongoSanatize());
+
+//Set security headers
+app.use(helmet());
+
+//Prevent cross site scripting
+app.use(xss());
+
+//Rate limiting
+const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
+app.use(limiter);
+
+//Prevent http param pollution
+app.use(hpp());
 
 //Set static folder so we can go to the url in browser and actually see the image
 //access img from browser http://localhost:5000/uploads/<photoname>
